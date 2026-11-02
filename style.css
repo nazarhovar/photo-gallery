@@ -48,7 +48,7 @@ body {
 
 /* Toolbar and filter buttons */
 
-/* Arrange the filter group and Upload button horizontally. */
+/* Arrange the filters, Add category, and Upload buttons horizontally. */
 .toolbar {
     display: flex;
 
@@ -58,20 +58,21 @@ body {
     /* Move items to the next line if there is not enough space. */
     flex-wrap: wrap;
 
-    /* Space between the filter group and Upload button. */
+    /* Space between filters and the two action buttons. */
     gap: 16px;
     margin-bottom: 24px;
 }
 
-/* Arrange All, Nature, City, and Animals buttons in a row. */
+/* Arrange category filter buttons in a row. */
 .filters {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
 }
 
-/* Apply the same styles to filter buttons and Upload. */
+/* Apply the same styles to filter buttons, Add category, and Upload. */
 .filters button,
+.category-open,
 .upload-open {
     /* 10px top/bottom and 20px left/right. */
     padding: 10px 20px;
@@ -89,6 +90,7 @@ body {
 
 /* Change the background when the mouse is over a button. */
 .filters button:hover,
+.category-open:hover,
 .upload-open:hover {
     background-color: #64452f;
 }
@@ -101,11 +103,14 @@ body {
     color: white;
 }
 
-.upload-open {
-    /* Push Upload to the right side of the toolbar. */
+/* Push Add category and Upload to the right while keeping them together. */
+.category-open {
     margin-left: auto;
+}
 
-    /* Keep the button text on one line. */
+.upload-open,
+.category-open {
+    /* Keep button labels on one line. */
     white-space: nowrap;
 }
 
@@ -147,7 +152,7 @@ select:focus-visible {
 
     /* Add a soft shadow around the card. */
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.22);
-        /* Smoothly show new photo cards. */
+    /* Smoothly show new photo cards. */
     animation: fadeInPhoto 0.6s ease;
 }
 
@@ -261,9 +266,9 @@ select:focus-visible {
     text-transform: capitalize;
 }
 
-/* Upload dialog */
+/* Add photo and Add category dialogs */
 
-/* Style the modal window used to upload photos. */
+/* Both forms use the same dialog style. */
 .upload-dialog {
     /* Use 440px or 94% of the browser width, whichever is smaller. */
     width: min(440px, 94vw);
@@ -276,33 +281,36 @@ select:focus-visible {
     font-family: inherit;
 }
 
-/* Darken the page behind both modal dialogs. */
+/* Darken the page behind upload, category, and photo viewer dialogs. */
 .upload-dialog::backdrop,
 .lightbox::backdrop {
     background: rgba(0, 0, 0, 0.9);
 }
 
-/* Upload dialog title. */
+/* Title inside either form dialog. */
 .upload-dialog h2 {
     margin: 0 0 24px;
     font-size: 26px;
 }
 
-/* Arrange upload form fields vertically. */
-#upload-form {
+/* Arrange upload and category form fields vertically. */
+#upload-form,
+#category-form {
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
 
-/* Text labels for the form fields. */
-#upload-form label {
+/* Text labels for both forms. */
+#upload-form label,
+#category-form label {
     font-size: 14px;
 }
 
 /* Apply the same styles to inputs and category selection. */
 #upload-form input,
-#upload-form select {
+#upload-form select,
+#category-form input {
     width: 100%;
     padding: 12px;
     border: 1px solid #ad8e76;
@@ -326,7 +334,7 @@ select:focus-visible {
     font-size: 13px;
 }
 
-/* Place Cancel and Add photo buttons on the right. */
+/* Place each form's Cancel and Add button on the right. */
 .upload-actions {
     display: flex;
 
@@ -337,7 +345,7 @@ select:focus-visible {
     gap: 10px;
 }
 
-/* Common styles for the upload dialog buttons. */
+/* Common styles for both forms' buttons. */
 .upload-actions button {
     padding: 10px 16px;
     border: 1px solid #ad8e76;
@@ -347,13 +355,15 @@ select:focus-visible {
     cursor: pointer;
 }
 
-/* Highlight the Add photo button. */
-#upload-submit {
+/* Highlight the Add photo and Add category buttons. */
+#upload-submit,
+#category-submit {
     background: #a46b43;
 }
 
-/* Make the Add photo button look inactive when disabled. */
-#upload-submit:disabled {
+/* Make form submit buttons look inactive when disabled. */
+#upload-submit:disabled,
+#category-submit:disabled {
     opacity: 0.5;
     cursor: default;
 }
@@ -505,8 +515,8 @@ select:focus-visible {
         gap: 16px;
     }
 
-    /* Stop pushing Upload to the right on small screens. */
-    .upload-open {
+    /* Let the action buttons wrap naturally on small screens. */
+    .category-open {
         margin-left: 0;
     }
 
@@ -518,9 +528,15 @@ select:focus-visible {
 
 /* Accessibility */
 
-/* Disable the zoom animation if the visitor prefers less motion. */
+/* Disable photo zoom and entrance animations if less motion is preferred. */
 @media (prefers-reduced-motion: reduce) {
     .photo-open img {
         transition: none;
+    }
+
+    .photo-card,
+    .lightbox,
+    .lightbox-photo img {
+        animation: none;
     }
 }

@@ -1,35 +1,39 @@
 import { elements } from "./pageElements.js";
-import { loadPhotosFromSupabase } from "./supabasePhotos.js";
+import { loadPhotosFromSupabaseIntoState } from "./supabasePhotos.js";
+import { loadCategoriesFromSupabaseIntoState } from "./supabaseCategories.js";
 import { refreshGalleryForSelectedCategory } from "./photoGallery.js";
-import { connectCategoryFilterButtons } from "./categoryFilterButtons.js";
-import { connectUploadPhotoForm } from "./uploadPhotoForm.js";
+import { refreshCategoryFilterButtonsFromState } from "./categoryFilterButtons.js";
+import { connectUploadPhotoForm, populateUploadCategoryOptionsFromState } from "./addPhotoForm.js";
+import { connectNewCategoryForm } from "./addCategoryForm.js";
 import { connectPhotoViewerButtons } from "./photoViewer.js";
 
-// The browser starts the app here after loading index.html.
+// index.html loads this file, so this is where the gallery starts.
 async function initializeGalleryApp() {
-    // 1. Tell the filter, upload, and viewer buttons what to do when clicked.
-    // These functions connect clicks; they do not click the buttons now.
-    connectCategoryFilterButtons();
+    // Give the existing HTML buttons and forms their click/submit actions.
+    // These functions only connect actions; the actions run after a user click.
     connectUploadPhotoForm();
+    connectNewCategoryForm();
+
     connectPhotoViewerButtons();
 
     try {
-        // 2. Get photo data from Supabase and store it in state.allPhotos.
-        await loadPhotosFromSupabase();
-        // 3. Use that data to create the cards the visitor sees.
+        // Read categories from the Supabase table into state.allCategories.
+        await loadCategoriesFromSupabaseIntoState();
+        // Use that array to build filter buttons and upload form options.
+        refreshCategoryFilterButtonsFromState();
+
+        populateUploadCategoryOptionsFromState();
+
+        // Read photo records into state.allPhotos.
+        await loadPhotosFromSupabaseIntoState();
+        // Turn the selected photos into visible cards in #gallery.
         refreshGalleryForSelectedCategory();
+
     } catch (error) {
-        // If loading fails, keep the page open and log the problem.
+        // A failed Supabase request stops startup; log the reason for debugging.
         console.error("Gallery startup failed:", error);
-    } finally {
-        // finally runs whether loading succeeded or failed.
-        elements.uploadOpen.disabled = false;
     }
 }
 
-// Start the steps above as soon as the browser loads this file.
+// Run the startup steps as soon as this module loads.
 initializeGalleryApp();
-
-
-
-

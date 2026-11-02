@@ -1,65 +1,65 @@
 import { supabaseClient, bucketName } from "./supabaseClient.js";
 import { state } from "./galleryState.js";
 
-// The database stores a file path; an <img> needs a full URL.
+// A photos table row has file_path; an <img> needs a complete URL in src.
 function getPublicPhotoUrl(filePath) {
-    // Ask Storage for the browser URL of this file path.
+    // Storage turns the saved file path into a public browser address.
     const { data } = supabaseClient.storage.from(bucketName).getPublicUrl(filePath);
     return data.publicUrl;
 }
 
-// Get photo records from the database and save them in the app state.
-export async function loadPhotosFromSupabase() {
-    // 1. Read photo details from the table, oldest first.
-    // The actual image files live in Storage, not in this table.
+// Read photos from Supabase and put ready-to-display objects in state.allPhotos.
+export async function loadPhotosFromSupabaseIntoState() {
+    // The photos table holds text and file paths. Storage holds the image files.
+    // Read table rows from oldest to newest.
     const { data, error } = await supabaseClient
         .from("photos")
         .select("title, category, file_path, created_at")
         .order("created_at", { ascending: true });
 
     if (error) {
-        // Throwing lets the caller handle the error with one catch block.
+        // Pass the error to the startup or upload form that called this function.
         throw error;
     }
 
-    // 2. Make a new array for the photo objects used by photoGallery.js.
+    // Convert each database row into the simpler object used by the gallery.
     const photos = [];
     for (let i = 0; i < data.length; i++) {
         const photo = data[i];
-        // One database row becomes one object with a ready-to-use image URL.
+        // src is the public URL that the card's <img> will use.
         photos.push({
             title: photo.title,
             category: photo.category,
             src: getPublicPhotoUrl(photo.file_path)
         });
     }
-    // 3. Save the full list so photoGallery.js can filter and display it.
+    // This only updates JavaScript data. A separate refresh builds HTML cards.
     state.allPhotos = photos;
 }
 
-// Upload the image file, then save its title, category, and path in the table.
+// Save a new photo in two places: file in Storage, details in the photos table.
 export async function uploadPhotoToSupabase(file, title, category) {
-    // Keep the extension (such as jpg) and give the file a unique name.
+    // Keep the extension and add a random name so files do not overwrite each other.
     const extension = file.name.split(".").pop().toLowerCase();
     const filePath = `${crypto.randomUUID()}.${extension}`;
 
-    // 1. Save the actual image file in Storage.
-    // await waits for the server before moving to the next step.
+    // First wait for Storage to save the actual image file.
     const { error: storageError } = await supabaseClient.storage
         .from(bucketName)
         .upload(filePath, file);
 
     if (storageError) {
-        // Stop here: there is no point adding a table row for a missing file.
+        // Do not create a table row if the image file was not saved.
         throw storageError;
     }
 
-    // 2. Save the title, category, and file path in the photos table.
-    // The table does not hold the image itself.
+    // Then save the photo's text details and file path in the photos table.
+    // The table row points to the file; it does not contain the image bytes.
     const { error: databaseError } = await supabaseClient
         .from("photos")
         .insert({ title, category, file_path: filePath });
 
+    // Let the form show this error if the table write fails.
     if (databaseError) {
         throw databaseError;
     }

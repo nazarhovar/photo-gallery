@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Photo Gallery Frontend Study</title>
-    
+
     <link rel="stylesheet" href="style.css">
 
-    <!-- Load Supabase first, then start our JavaScript app. -->
+    <!-- The Supabase library loads first. startGallery.js then starts our app. -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="module" src="js/startGallery.js"></script>
 </head>
@@ -20,23 +20,38 @@
 
         <section aria-label="Photo gallery">
             <div class="toolbar">
-                <div class="filters" role="group" aria-label="Filter photos by category">
-                    <button class="active" type="button" data-category="all">All photos</button>
-                    <button type="button" data-category="nature">Nature</button>
-                    <button type="button" data-category="city">City</button>
-                    <button type="button" data-category="animals">Animals</button>
-                </div>
+                <!-- JavaScript fills this empty row using categories from Supabase. -->
+                <div class="filters" role="group" aria-label="Filter photos by category"></div>
 
+                <button class="category-open" id="category-open" type="button">+ Add category</button>
                 <button class="upload-open" id="upload-open" type="button">+ Upload photo</button>
             </div>
 
+            <!-- JavaScript puts one photo card here for each matching photo. -->
             <div class="gallery" id="gallery"></div>
-
         </section>
 
-        <!-- Dialog containing the upload form. -->
+        <!-- This dialog already exists; addCategoryForm.js opens and submits it. -->
+        <dialog class="upload-dialog" id="category-dialog" aria-label="Add category">
+            <h2>Add category</h2>
+
+            <form id="category-form">
+                <label for="category-name">Category name</label>
+                <input id="category-name" type="text" maxlength="40" placeholder="Enter category name" required>
+
+                <p class="upload-message" id="category-message" role="status"></p>
+
+                <div class="upload-actions">
+                    <button type="button" id="category-cancel">Cancel</button>
+                    <button type="submit" id="category-submit">Add category</button>
+                </div>
+            </form>
+        </dialog>
+
+        <!-- This dialog already exists; addPhotoForm.js sends its data to Supabase. -->
         <dialog class="upload-dialog" id="upload-dialog" aria-label="Upload photo">
             <h2>Upload photo</h2>
+
             <form id="upload-form">
                 <label for="upload-file">Image</label>
                 <input id="upload-file" type="file" accept="image/*,.jfif" required>
@@ -45,14 +60,11 @@
                 <input id="upload-title" type="text" maxlength="80" placeholder="Enter photo title" required>
 
                 <label for="upload-category">Category</label>
-                <select id="upload-category" required>
-                    <option value="">Choose a category</option>
-                    <option value="nature">Nature</option>
-                    <option value="city">City</option>
-                    <option value="animals">Animals</option>
-                </select>
+                <!-- JavaScript adds one option for each category in state.allCategories. -->
+                <select id="upload-category" required></select>
 
                 <p class="upload-message" id="upload-message" role="status"></p>
+
                 <div class="upload-actions">
                     <button type="button" id="upload-cancel">Cancel</button>
                     <button type="submit" id="upload-submit">Add photo</button>
@@ -60,16 +72,20 @@
             </form>
         </dialog>
 
-        <!-- Dialog for viewing one large photo. -->
+        <!-- photoViewer.js fills this dialog with the clicked photo and opens it. -->
         <dialog class="lightbox" id="lightbox" aria-label="Photo viewer">
             <button class="lightbox-close" id="lightbox-close" type="button" aria-label="Close photo">✕</button>
+
             <div class="lightbox-content">
                 <button class="lightbox-arrow lightbox-prev" id="lightbox-prev" type="button" aria-label="Previous photo">‹</button>
+
                 <div class="lightbox-photo">
                     <img id="lightbox-image" alt="">
                 </div>
+
                 <button class="lightbox-arrow lightbox-next" id="lightbox-next" type="button" aria-label="Next photo">›</button>
             </div>
+
             <div class="lightbox-info">
                 <span id="lightbox-title"></span>
             </div>
@@ -77,6 +93,3 @@
     </main>
 </body>
 </html>
-
-
-

@@ -2,25 +2,25 @@ import { elements } from "./pageElements.js";
 import { state } from "./galleryState.js";
 import { openPhotoViewer } from "./photoViewer.js";
 
-// Main flow: choose photos and show every matching card.
+// Read the selected category and redraw the cards shown in #gallery.
 export function refreshGalleryForSelectedCategory() {
-    // 1. Read state.allPhotos and keep the photos for the selected filter.
+    // Start with every photo loaded from Supabase; keep only the selected ones.
     const filteredPhotos = getPhotosMatchingCurrentFilter();
-    // 2. Save this list so the large-photo viewer knows which photos to show.
+    // The viewer uses this same list when Previous or Next is clicked.
     state.photosMatchingFilter = filteredPhotos;
 
-    // 3. Create and show a card for every matching photo.
+    // Replace the old cards with cards made from these photo objects.
     showPhotoCardsInGallery(filteredPhotos);
 }
 
-// Return photos for the selected filter without changing state.allPhotos.
+// Return photo objects that match state.selectedCategory; keep allPhotos intact.
 function getPhotosMatchingCurrentFilter() {
-    // "all" means every photo loaded from the server.
+    // "all" means no filtering: show the full server list.
     if (state.selectedCategory === "all") {
         return state.allPhotos;
     }
 
-    // For Nature, City, or Animals, compare each photo's category.
+    // For any other category, check each photo one by one.
     const categoryPhotos = [];
     for (let i = 0; i < state.allPhotos.length; i++) {
         const photo = state.allPhotos[i];
@@ -31,30 +31,34 @@ function getPhotosMatchingCurrentFilter() {
     return categoryPhotos;
 }
 
-// Build one photo card from one photo object.
+// Connect the photo button: a click opens this photo in the large viewer.
+function connectPhotoCardOpenButtonClick(openButton, photo) {
+    openButton.addEventListener("click", () => {
+        // indexOf finds this photo's position in the list behind the shown cards.
+        openPhotoViewer(state.photosMatchingFilter.indexOf(photo));
+    });
+}
+
+// Turn one plain photo object into one <figure> with an image and caption.
 function createPhotoCardElement(photo) {
-    // "photo" is one object from state.allPhotos, with title, category, and src.
-    // createElement builds HTML in memory; showPhotoCardsInGallery inserts it later.
+    // photo has title, category and src. It is data, not an HTML element.
+    // createElement builds the card in memory; it is inserted later.
     const card = document.createElement("figure");
     card.classList.add("photo-card");
 
-    // This button will contain the image. Clicking the image opens the viewer.
+    // The image sits inside a button so a click can open the viewer.
     const openButton = document.createElement("button");
     openButton.type = "button";
     openButton.classList.add("photo-open");
 
-    // src tells the browser where the image file is;
+    // src is the public image URL prepared by supabasePhotos.js.
     const image = document.createElement("img");
     image.src = photo.src;
 
-    openButton.addEventListener("click", () => {
-        // This code runs later, when the image is clicked.
-        // indexOf finds this photo's number in the filtered list.
-        openPhotoViewer(state.photosMatchingFilter.indexOf(photo));
-    });
+    connectPhotoCardOpenButtonClick(openButton, photo);
     openButton.append(image);
 
-    // Create the text shown on the card: title and category.
+    // The caption shows text from this photo object.
     const caption = document.createElement("figcaption");
     const title = document.createElement("h2");
     title.textContent = photo.title;
@@ -62,21 +66,21 @@ function createPhotoCardElement(photo) {
     category.classList.add("photo-category");
     category.textContent = photo.category;
 
-    // Put the smaller pieces inside the card and return the finished card.
+    // Assemble the pieces and return the card; it is not on the page yet.
     caption.append(title, category);
     card.append(openButton, caption);
     return card;
 }
 
-// Show the photos passed in "items" inside the #gallery element on the page.
+// Turn every photo in "items" into a card and put the cards on the page.
 function showPhotoCardsInGallery(items) {
-    // "items" is the array of photos selected by the current filter.
+    // "items" is the filtered array passed by refreshGalleryForSelectedCategory.
     const cards = [];
     for (let i = 0; i < items.length; i++) {
-        // Turn one photo object into one HTML card.
+        // One photo object becomes one <figure> element.
         cards.push(createPhotoCardElement(items[i]));
     }
-    // Remove the cards currently on the page and insert these new cards.
+    // This is where the cards actually appear in the #gallery HTML container.
     elements.gallery.replaceChildren(...cards);
 }
 

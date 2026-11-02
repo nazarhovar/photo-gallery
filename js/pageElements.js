@@ -1,13 +1,11 @@
-// Find the HTML elements once so other files can use them by name.
-// #gallery means the element with id="gallery".
-// ".filters button" means every button inside the filters section.
+// Find existing elements in index.html once and give them short names.
+// Other files use these references; this file does not create new HTML.
 export const elements = {
-    // The empty container where photoGallery.js inserts photo cards.
+    // Containers filled later by JavaScript.
     gallery: document.querySelector("#gallery"),
-    // All category buttons, used by categoryFilterButtons.js.
-    filterButtons: document.querySelectorAll(".filters button"),
+    filters: document.querySelector(".filters"),
 
-    // Upload dialog, form fields, and its buttons.
+    // Add photo button, dialog and form fields.
     uploadOpen: document.querySelector("#upload-open"),
     uploadDialog: document.querySelector("#upload-dialog"),
     uploadForm: document.querySelector("#upload-form"),
@@ -18,7 +16,16 @@ export const elements = {
     uploadSubmit: document.querySelector("#upload-submit"),
     uploadCancel: document.querySelector("#upload-cancel"),
 
-    // Large-photo dialog and its controls.
+    // Add category button, dialog and form fields.
+    categoryOpen: document.querySelector("#category-open"),
+    categoryDialog: document.querySelector("#category-dialog"),
+    categoryForm: document.querySelector("#category-form"),
+    categoryName: document.querySelector("#category-name"),
+    categoryMessage: document.querySelector("#category-message"),
+    categorySubmit: document.querySelector("#category-submit"),
+    categoryCancel: document.querySelector("#category-cancel"),
+
+    // Large photo dialog and its navigation buttons.
     lightbox: document.querySelector("#lightbox"),
     lightboxImage: document.querySelector("#lightbox-image"),
     lightboxTitle: document.querySelector("#lightbox-title"),
@@ -26,7 +33,3 @@ export const elements = {
     lightboxPrev: document.querySelector("#lightbox-prev"),
     lightboxNext: document.querySelector("#lightbox-next")
 };
-
-
-
-

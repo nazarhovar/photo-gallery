@@ -1,50 +1,51 @@
 import { elements } from "./pageElements.js";
 import { state } from "./galleryState.js";
 
-// Called when a visitor clicks a photo card.
-// "index" is that photo's position in state.photosMatchingFilter (starting at 0).
+// Open the clicked photo. "index" is its position in photosMatchingFilter.
+// Array positions start at 0, so 0 means the first shown photo.
 export function openPhotoViewer(index) {
-    // Remember which photo is open.
+    // Save the position so the arrows know where to move from.
     state.openPhotoIndex = index;
 
-    // Put the photo into the dialog first, then show the dialog.
+    // Fill the existing HTML dialog before making it visible.
     showCurrentPhotoInViewer();
     elements.lightbox.showModal();
 }
 
-// Update the image and title inside the already created HTML dialog.
+// Read the currently selected photo and put its data into the open dialog.
 function showCurrentPhotoInViewer() {
-    // Use the saved index to get one photo from the filtered list.
+    // The filtered list matches the cards the visitor sees behind the dialog.
     const photo = state.photosMatchingFilter[state.openPhotoIndex];
 
-    // Show the selected photo and its title.
+    // src loads the picture; textContent shows its title.
     elements.lightboxImage.src = photo.src;
     elements.lightboxTitle.textContent = photo.title;
 }
 
-// Show the photo before or after the current one.
+// Move one photo left or right in the filtered list.
 function showPreviousOrNextPhoto(step) {
-    // The Previous button passes -1; the Next button passes 1.
+    // Previous passes -1 and Next passes 1.
     const nextIndex = state.openPhotoIndex + step;
 
-    // Stop if the next photo does not exist.
+    // Stay on the first or last photo instead of going past the list.
     if (nextIndex < 0 || nextIndex >= state.photosMatchingFilter.length) {
         return;
     }
 
-    // Save the new position and show the next photo.
+    // Remember the new position and replace the picture in the dialog.
     state.openPhotoIndex = nextIndex;
     showCurrentPhotoInViewer();
 
-    // Restart the CSS animation every time the photo changes.
+    // Remove and add the class so the CSS slide starts again for this photo.
+    // Reading offsetWidth makes the browser apply the removal first.
     elements.lightboxImage.classList.remove("slide-animation");
     void elements.lightboxImage.offsetWidth;
     elements.lightboxImage.classList.add("slide-animation");
 }
 
-// Run once at startup: tell the viewer buttons what to do when clicked.
+// Connect Close, Previous and Next once when the app starts.
 export function connectPhotoViewerButtons() {
-    // These functions run later, when a visitor actually clicks a button.
+    // Each function runs later, when its button is clicked.
     elements.lightboxClose.addEventListener("click", () => elements.lightbox.close());
     elements.lightboxPrev.addEventListener("click", () => showPreviousOrNextPhoto(-1));
     elements.lightboxNext.addEventListener("click", () => showPreviousOrNextPhoto(1));

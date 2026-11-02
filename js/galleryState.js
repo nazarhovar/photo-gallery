@@ -1,9 +1,10 @@
-// This object holds the data the app is using right now.
-// Changing a value here does not update the page; the gallery must be rendered again.
+// Temporary memory for this open page. Supabase is the long-term storage.
+// Changing state does not change HTML until a refresh function runs.
 export const state = {
-    allPhotos: [], // Every photo loaded from Supabase.
-    photosMatchingFilter: [], // Photos matching the filter; the viewer moves through them.
-    selectedCategory: "all", // The selected filter.
+    allPhotos: [], // All photo objects read from the photos table.
+    allCategories: [], // All category rows read from the categories table.
+    photosMatchingFilter: [], // Photo objects behind the shown cards; the viewer browses this list.
+    selectedCategory: "all", // "all" or the category chosen with a filter button.
     openPhotoIndex: 0 // Position of the open photo in photosMatchingFilter.
 };
 
