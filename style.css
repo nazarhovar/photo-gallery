@@ -147,6 +147,39 @@ select:focus-visible {
 
     /* Add a soft shadow around the card. */
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.22);
+        /* Smoothly show new photo cards. */
+    animation: fadeInPhoto 0.6s ease;
+}
+
+/* Make new photo cards fade in and move slightly upward. */
+@keyframes fadeInPhoto {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Smoothly open the large photo dialog. */
+.lightbox[open] {
+    animation: openLightbox 0.45s ease;
+}
+
+/* Fade in and slightly zoom the dialog. */
+@keyframes openLightbox {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 /* Clickable photo */
@@ -382,6 +415,24 @@ select:focus-visible {
 
     /* Show the whole photo without cropping it. */
     object-fit: contain;
+}
+
+/* Animate the photo when switching with Previous or Next. */
+.lightbox-photo img.slide-animation {
+    animation: slidePhoto 0.45s ease;
+}
+
+/* Fade in and move the new photo slightly to the right. */
+@keyframes slidePhoto {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 /* Common styles for Previous and Next arrows. */
