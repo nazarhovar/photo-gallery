@@ -1,0 +1,475 @@
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scrollbar-gutter: stable;
+}
+
+body {
+    /* Make the page at least as tall as the browser window. */
+    min-height: 100vh;
+    margin: 0;
+
+    background: linear-gradient(to top, #824e27, #000000);
+    background-attachment: fixed;
+
+    color: #f4f5f7;
+    font-family: Georgia, sans-serif;
+}
+
+/* Limit the page width and center the content. */
+.container {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 56px 24px;
+}
+
+/* Page header */
+/* Add space between the header and the toolbar. */
+.page-header {
+    margin-bottom: 36px;
+}
+
+.page-header h1 {
+    /* Remove default margins and add 12px below the title. */
+    margin: 0 0 12px;
+    font-size: 52px;
+
+    /* Make the letters slightly closer together. */
+    letter-spacing: -2px;
+}
+
+.page-header p {
+    margin: 0;
+    color: #d6c9be;
+    font-size: 16px;
+}
+
+/* Toolbar and filter buttons */
+
+/* Arrange the filter group and Upload button horizontally. */
+.toolbar {
+    display: flex;
+
+    /* Center items vertically. */
+    align-items: center;
+
+    /* Move items to the next line if there is not enough space. */
+    flex-wrap: wrap;
+
+    /* Space between the filter group and Upload button. */
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+/* Arrange All, Nature, City, and Animals buttons in a row. */
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* Apply the same styles to filter buttons and Upload. */
+.filters button,
+.upload-open {
+    /* 10px top/bottom and 20px left/right. */
+    padding: 10px 20px;
+    border: 1px solid #ad8e76;
+    border-radius: 0;
+    background-color: transparent;
+    color: #f4f5f7;
+
+    /* Use the font from the parent element. */
+    font: inherit;
+
+    /* Show a hand cursor when hovering over a button. */
+    cursor: pointer;
+}
+
+/* Change the background when the mouse is over a button. */
+.filters button:hover,
+.upload-open:hover {
+    background-color: #64452f;
+}
+
+/* Highlight the selected category button.
+   JavaScript adds or removes the "active" class. */
+.filters button.active {
+    border-color: #b47b50;
+    background-color: #a46b43;
+    color: white;
+}
+
+.upload-open {
+    /* Push Upload to the right side of the toolbar. */
+    margin-left: auto;
+
+    /* Keep the button text on one line. */
+    white-space: nowrap;
+}
+
+/* Show an outline when navigating with the keyboard. */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+    outline: 2px solid #f2c79e;
+    outline-offset: 3px;
+}
+
+/* Photo grid */
+
+/* Display photo cards in three equal columns. */
+.gallery {
+    display: grid;
+
+    /* Create three equal columns that can shrink if needed. */
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    /* Space between photo cards. */
+    gap: 22px;
+}
+
+/* Style one photo card. */
+.photo-card {
+    /* Use this card as the position reference for its caption. */
+    position: relative;
+
+    /* Keep every card in a 4:3 width-to-height ratio. */
+    aspect-ratio: 4 / 3;
+    margin: 0;
+
+    /* Hide image parts that extend outside the card. */
+    overflow: hidden;
+
+    border: 1px solid rgba(255, 229, 205, 0.5);
+    background-color: #302820;
+
+    /* Add a soft shadow around the card. */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.22);
+}
+
+/* Clickable photo */
+
+/* Make the photo button fill the entire card. */
+.photo-open {
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.photo-open img {
+    display: block;
+
+    /* Make the image fill the photo button. */
+    width: 100%;
+    height: 100%;
+
+    /* Fill the card without stretching the image.
+       Image edges may be cropped. */
+    object-fit: cover;
+
+    /* Make image scaling smooth over 0.3 seconds. */
+    transition: transform 0.3s ease;
+}
+
+/* Zoom the image by 6% when hovering over the photo. */
+.photo-open:hover img {
+    transform: scale(1.06);
+}
+
+/* Caption over the photo */
+
+/* Place the title and category over the bottom of the photo. */
+.photo-card figcaption {
+    /* Position the caption relative to .photo-card. */
+    position: absolute;
+
+    /* Attach the caption to the bottom, left, and right edges. */
+    right: 0;
+    bottom: 0;
+    left: 0;
+
+    /* Extra top padding makes space for the dark gradient. */
+    padding: 65px 18px 16px;
+
+    /* Dark at the bottom and transparent at the top.
+       This makes the white text easier to read. */
+    background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.92),
+        rgba(0, 0, 0, 0.45) 55%,
+        transparent
+    );
+
+    color: white;
+
+    /* Allow clicks to pass through the caption to the photo button. */
+    pointer-events: none;
+}
+
+/* Photo title inside the caption. */
+.photo-card h2 {
+    margin: 0 0 6px;
+    font-size: 19px;
+}
+
+.photo-category {
+    margin: 0;
+    color: #e1d3c7;
+    font-size: 12px;
+
+    /* Display the first letter of each word in uppercase. */
+    text-transform: capitalize;
+}
+
+/* Upload dialog */
+
+/* Style the modal window used to upload photos. */
+.upload-dialog {
+    /* Use 440px or 94% of the browser width, whichever is smaller. */
+    width: min(440px, 94vw);
+    max-width: none;
+
+    padding: 28px;
+    border: 1px solid #ad8e76;
+    background: #17120f;
+    color: white;
+    font-family: inherit;
+}
+
+/* Darken the page behind both modal dialogs. */
+.upload-dialog::backdrop,
+.lightbox::backdrop {
+    background: rgba(0, 0, 0, 0.9);
+}
+
+/* Upload dialog title. */
+.upload-dialog h2 {
+    margin: 0 0 24px;
+    font-size: 26px;
+}
+
+/* Arrange upload form fields vertically. */
+#upload-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Text labels for the form fields. */
+#upload-form label {
+    font-size: 14px;
+}
+
+/* Apply the same styles to inputs and category selection. */
+#upload-form input,
+#upload-form select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ad8e76;
+    border-radius: 0;
+    background: #302820;
+    color: white;
+    font: inherit;
+}
+
+/* Make the file input text slightly smaller. */
+#upload-form input[type="file"] {
+    font-size: 13px;
+}
+
+/* Show validation or upload error messages. */
+.upload-message {
+    /* Reserve some height for a message. */
+    min-height: 18px;
+    margin: 0;
+    color: #ffb4a2;
+    font-size: 13px;
+}
+
+/* Place Cancel and Add photo buttons on the right. */
+.upload-actions {
+    display: flex;
+
+    /* Move both buttons to the right side. */
+    justify-content: flex-end;
+
+    /* Keep 10px between the buttons. */
+    gap: 10px;
+}
+
+/* Common styles for the upload dialog buttons. */
+.upload-actions button {
+    padding: 10px 16px;
+    border: 1px solid #ad8e76;
+    background: transparent;
+    color: white;
+    font: inherit;
+    cursor: pointer;
+}
+
+/* Highlight the Add photo button. */
+#upload-submit {
+    background: #a46b43;
+}
+
+/* Make the Add photo button look inactive when disabled. */
+#upload-submit:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+/* Photo viewer dialog */
+
+/* Style the modal window for viewing a large photo. */
+.lightbox {
+    /* Allow a larger window, but keep it inside the screen. */
+    width: min(1000px, 94vw);
+    max-width: none;
+    max-height: 95vh;
+
+    padding: 16px;
+    border: 1px solid #ad8e76;
+    background: #17120f;
+    color: white;
+    font-family: inherit;
+}
+
+/* Place the Close button in the top-right corner. */
+.lightbox-close {
+    display: block;
+
+    /* Auto left margin pushes the button to the right. */
+    margin: 0 0 12px auto;
+
+    padding: 5px 12px;
+    border: 1px solid #ad8e76;
+    background: transparent;
+    color: white;
+    font: inherit;
+    cursor: pointer;
+}
+
+/* Center the photo and provide a position reference for arrows. */
+.lightbox-content {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Center the image inside the photo area. */
+.lightbox-photo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 220px;
+}
+
+.lightbox-photo img {
+    display: block;
+
+    /* Keep the full photo inside the available screen space. */
+    max-width: 100%;
+    max-height: 75vh;
+
+    /* Show the whole photo without cropping it. */
+    object-fit: contain;
+}
+
+/* Common styles for Previous and Next arrows. */
+.lightbox-arrow {
+    /* Position the arrows over the photo area. */
+    position: absolute;
+
+    /* Move the top edge to the vertical center. */
+    top: 50%;
+
+    /* Keep arrows above the photo. */
+    z-index: 1;
+
+    /* Move the arrow up by half its own height.
+       Together with top: 50%, this centers it vertically. */
+    transform: translateY(-50%);
+
+    width: 44px;
+    height: 48px;
+    border: 1px solid #ad8e76;
+    background: rgba(0, 0, 0, 0.65);
+    color: white;
+    font-size: 30px;
+    cursor: pointer;
+}
+
+/* Place Previous near the left edge. */
+.lightbox-prev {
+    left: 8px;
+}
+
+/* Place Next near the right edge. */
+.lightbox-next {
+    right: 8px;
+}
+
+/* Add space above the photo title. */
+.lightbox-info {
+    padding-top: 14px;
+    font-size: 14px;
+}
+
+/* Tablet layout */
+
+/* Use two photo columns when the screen is 900px or narrower. */
+@media (max-width: 900px) {
+    .gallery {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* Phone layout */
+
+/* Adjust the page for screens 600px wide or narrower. */
+@media (max-width: 600px) {
+    /* Reduce page padding on small screens. */
+    .container {
+        padding: 32px 16px;
+    }
+
+    /* Make the main title smaller. */
+    .page-header h1 {
+        font-size: 36px;
+        letter-spacing: -1px;
+    }
+
+    /* Show photos in one column. */
+    .gallery {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    /* Stop pushing Upload to the right on small screens. */
+    .upload-open {
+        margin-left: 0;
+    }
+
+    /* Reduce padding inside the upload dialog. */
+    .upload-dialog {
+        padding: 20px;
+    }
+}
+
+/* Accessibility */
+
+/* Disable the zoom animation if the visitor prefers less motion. */
+@media (prefers-reduced-motion: reduce) {
+    .photo-open img {
+        transition: none;
+    }
+}
